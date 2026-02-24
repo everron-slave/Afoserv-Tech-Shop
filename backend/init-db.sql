@@ -1,0 +1,3 @@
+-- Initial database setup script
+-- This file is mounted into PostgreSQL container for initialization
+-- You can add SQL commands here to run on database creation
