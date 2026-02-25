@@ -8,16 +8,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#e6f7f9',
+          100: '#cceff3',
+          200: '#99dfe7',
+          300: '#66cfdb',
+          400: '#33bfcf',
+          500: '#1F8F9D',
+          600: '#19727d',
+          700: '#13565e',
+          800: '#0c393e',
+          900: '#061d1f',
         },
         secondary: {
           50: '#f8fafc',
@@ -34,6 +34,15 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
     },
   },

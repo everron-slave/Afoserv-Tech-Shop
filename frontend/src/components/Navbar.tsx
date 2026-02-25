@@ -21,8 +21,12 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg"></div>
-            <span className="text-xl font-bold text-gray-900">AFORSEV</span>
+            <img
+              src="/logo2.png"
+              alt="AFORSEV Logo"
+              className="w-10 h-10 object-cover rounded-lg"
+            />
+            <span className="text-xl font-bold text-gray-900">AFORSEV Tech Shop</span>
           </Link>
 
           {/* Desktop Navigation */}

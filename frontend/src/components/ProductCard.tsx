@@ -1,4 +1,5 @@
 import { ShoppingCart, Star } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useCartStore } from '../store/cartStore'
 import toast from 'react-hot-toast'
 
@@ -31,19 +32,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <div className="card hover:shadow-lg transition-shadow duration-300">
       {/* Product Image */}
-      <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
+      <Link to={`/products/${product.id}`} className="block aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             No image
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Product Info */}
       <div className="space-y-3">
@@ -52,9 +55,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-sm text-primary-600 font-medium">
               {product.category}
             </span>
-            <h3 className="text-lg font-semibold text-gray-900 mt-1">
-              {product.name}
-            </h3>
+            <Link to={`/products/${product.id}`}>
+              <h3 className="text-lg font-semibold text-gray-900 mt-1 hover:text-primary-600 transition-colors">
+                {product.name}
+              </h3>
+            </Link>
           </div>
           {product.rating && (
             <div className="flex items-center text-amber-600">
