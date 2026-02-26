@@ -4,7 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Mail, Phone, ShoppingBag, Star, 
 import ProductCard from '../components/ProductCard'
 
 const HomePage = () => {
-  // Product data for slideshow and sections
+  // Product data for slideshow and sections - Optimized images with proper sizing
   const allProducts = [
     {
       id: '1',
@@ -12,7 +12,7 @@ const HomePage = () => {
       description: 'Apple M3 Pro chip, 36GB RAM, 1TB SSD',
       price: 2499,
       category: 'Laptops',
-      imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
+      imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=600&fit=crop',
       featured: true,
     },
     {
@@ -21,7 +21,7 @@ const HomePage = () => {
       description: 'Titanium design, A17 Pro chip, 256GB',
       price: 999,
       category: 'Smartphones',
-      imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569',
+      imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=600&fit=crop',
       featured: true,
     },
     {
@@ -30,7 +30,7 @@ const HomePage = () => {
       description: 'Industry-leading noise cancellation',
       price: 399,
       category: 'Accessories',
-      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
+      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop',
       featured: true,
     },
     {
@@ -39,7 +39,7 @@ const HomePage = () => {
       description: '4K OLED display, Intel i9, 32GB RAM',
       price: 2199,
       category: 'Laptops',
-      imageUrl: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5',
+      imageUrl: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=600&fit=crop',
       featured: false,
     },
     {
@@ -48,7 +48,7 @@ const HomePage = () => {
       description: 'AI-powered camera, 512GB storage',
       price: 899,
       category: 'Smartphones',
-      imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf',
+      imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w-800&h=600&fit=crop',
       featured: false,
     },
     {
@@ -57,7 +57,7 @@ const HomePage = () => {
       description: 'Advanced health monitoring, GPS',
       price: 429,
       category: 'Accessories',
-      imageUrl: 'https://images.unsplash.com/photo-1434493650001-5d43a6fea0a6',
+      imageUrl: 'https://images.unsplash.com/photo-1434493650001-5d43a6fea0a6?w=800&h=600&fit=crop',
       featured: false,
     },
     {
@@ -66,7 +66,7 @@ const HomePage = () => {
       description: 'Touchscreen, 13.5" PixelSense',
       price: 1299,
       category: 'Laptops',
-      imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853',
+      imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop',
       featured: false,
     },
     {
@@ -75,7 +75,7 @@ const HomePage = () => {
       description: 'Tensor G3 chip, 120Hz display',
       price: 799,
       category: 'Smartphones',
-      imageUrl: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97',
+      imageUrl: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&h=600&fit=crop',
       featured: false,
     },
     {
@@ -84,34 +84,70 @@ const HomePage = () => {
       description: 'Active noise cancellation, spatial audio',
       price: 249,
       category: 'Accessories',
-      imageUrl: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1',
+      imageUrl: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=800&h=600&fit=crop',
+      featured: false,
+    },
+    // Additional products to reach 4 per category
+    {
+      id: '10',
+      name: 'Lenovo ThinkPad X1 Carbon',
+      description: 'Business laptop with Intel i7, 16GB RAM, 512GB SSD',
+      price: 1699,
+      category: 'Laptops',
+      imageUrl: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&h=600&fit=crop',
+      featured: false,
+    },
+    {
+      id: '11',
+      name: 'OnePlus 12',
+      description: 'Snapdragon 8 Gen 3, 256GB, 120Hz display',
+      price: 699,
+      category: 'Smartphones',
+      imageUrl: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800&h=600&fit=crop',
+      featured: false,
+    },
+    {
+      id: '12',
+      name: 'Samsung Galaxy Watch 6',
+      description: 'Advanced health tracking, GPS, LTE option',
+      price: 329,
+      category: 'Accessories',
+      imageUrl: 'https://images.unsplash.com/photo-1579586337278-3f4b9c5b5b1a?w=800&h=600&fit=crop',
       featured: false,
     },
   ]
 
-  // Brands data
+  // Brands data - Optimized with smaller logos
   const brands = [
-    { id: 1, name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
-    { id: 2, name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg' },
-    { id: 3, name: 'Dell', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg' },
-    { id: 4, name: 'Microsoft', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
-    { id: 5, name: 'Google', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg' },
-    { id: 6, name: 'Sony', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg' },
-    { id: 7, name: 'HP', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/29/HP_New_Logo_2D.svg' },
-    { id: 8, name: 'Lenovo', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Lenovo_logo_2015.svg' },
+    { id: 1, name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg?width=100' },
+    { id: 2, name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg?width=100' },
+    { id: 3, name: 'Dell', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg?width=100' },
+    { id: 4, name: 'Microsoft', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg?width=100' },
+    { id: 5, name: 'Google', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg?width=100' },
+    { id: 6, name: 'Sony', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg?width=100' },
+    { id: 7, name: 'HP', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/29/HP_New_Logo_2D.svg?width=100' },
+    { id: 8, name: 'Lenovo', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Lenovo_logo_2015.svg?width=100' },
   ]
 
   // State for slideshow
   const [currentSlide, setCurrentSlide] = useState(0)
   const featuredProducts = allProducts.filter(p => p.featured)
 
-  // Auto-rotate slideshow with longer interval for better performance
+  // Auto-rotate slideshow with optimized interval and reduced frequency
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % featuredProducts.length)
-    }, 7000) // Increased from 5000ms to 7000ms for better performance
-    return () => clearInterval(interval)
-  }, [featuredProducts.length])
+    let timeoutId: number;
+    
+    const rotateSlide = () => {
+      setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
+      timeoutId = window.setTimeout(rotateSlide, 8000); // Increased to 8 seconds for better performance
+    };
+    
+    timeoutId = window.setTimeout(rotateSlide, 8000);
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [featuredProducts.length]);
 
   // State for newsletter
   const [email, setEmail] = useState('')
@@ -138,29 +174,29 @@ const HomePage = () => {
     <div className="space-y-16">
       {/* Product Slideshow Section - Replaces "Your Trusted Technology Partner" */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-500 to-primary-700">
-        <div className="relative h-[500px] flex items-center">
+        <div className="relative h-[400px] md:h-[350px] flex items-center">
           {/* Slideshow */}
           <div className="absolute inset-0 flex transition-transform duration-500 ease-in-out"
                style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
             {featuredProducts.map((product) => (
               <div key={product.id} className="min-w-full h-full flex items-center">
-                <div className="container mx-auto px-8 flex flex-col md:flex-row items-center">
-                  <div className="md:w-1/2 text-white mb-8 md:mb-0">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
-                    <p className="text-xl mb-6 text-primary-100">{product.description}</p>
-                    <div className="flex items-center mb-6">
-                      <span className="text-3xl font-bold">${product.price}</span>
-                      <span className="ml-4 px-3 py-1 bg-white/20 rounded-full text-sm">Free Shipping</span>
+                <div className="container mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-center md:justify-between py-8 md:py-0">
+                  <div className="w-full md:w-1/2 text-white mb-6 md:mb-0 order-2 md:order-1">
+                    <h1 className="text-2xl md:text-4xl font-bold mb-3">{product.name}</h1>
+                    <p className="text-base md:text-lg mb-4 text-primary-100 line-clamp-2 md:line-clamp-none">{product.description}</p>
+                    <div className="flex items-center mb-4">
+                      <span className="text-xl md:text-2xl font-bold">${product.price}</span>
+                      <span className="ml-3 px-2 py-1 bg-white/20 rounded-full text-xs">Free Shipping</span>
                     </div>
                     <Link
                       to={`/products/${product.id}`}
-                      className="btn-primary bg-white text-primary-700 hover:bg-gray-100 inline-flex items-center px-6 py-3 rounded-lg font-semibold"
+                      className="btn-primary bg-white text-primary-700 hover:bg-gray-100 inline-flex items-center px-4 py-2 md:px-5 md:py-2 rounded-lg font-semibold text-sm"
                     >
-                      Shop Now <ArrowRight className="ml-2 w-5 h-5" />
+                      Shop Now <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </div>
-                  <div className="md:w-1/2 flex justify-center">
-                    <div className="relative w-80 h-80">
+                  <div className="w-full md:w-1/2 flex justify-center mb-6 md:mb-0 order-1 md:order-2">
+                    <div className="relative w-48 h-48 md:w-64 md:h-64">
                       <div className="absolute inset-0 bg-white/10 rounded-3xl transform rotate-6"></div>
                       <img
                         src={product.imageUrl}
@@ -221,9 +257,11 @@ const HomePage = () => {
               View All <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0">
             {laptops.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="min-w-[280px] md:min-w-0">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </div>
@@ -242,9 +280,11 @@ const HomePage = () => {
               View All <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0">
             {smartphones.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="min-w-[280px] md:min-w-0">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </div>
@@ -263,9 +303,11 @@ const HomePage = () => {
               View All <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0">
             {accessories.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="min-w-[280px] md:min-w-0">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </div>
@@ -284,9 +326,11 @@ const HomePage = () => {
               View All <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0">
             {recommended.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="min-w-[280px] md:min-w-0">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </div>
@@ -349,22 +393,24 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Brands Slideshow */}
+      {/* Brands Slideshow - Optimized with slower animation and will-change */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-10 text-center">Featured Brands</h2>
         <div className="relative overflow-hidden">
-          <div className="flex animate-marquee space-x-12 py-4">
+          <div className="flex animate-marquee-slow space-x-12 py-4 will-change-transform">
             {brands.concat(brands).map((brand, index) => (
               <div
                 key={`${brand.id}-${index}`}
-                className="flex-shrink-0 w-40 h-24 bg-white rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-lg transition-shadow"
+                className="flex-shrink-0 w-40 h-24 bg-white rounded-xl shadow-sm flex items-center justify-center p-4 hover:shadow-md transition-shadow duration-300"
               >
                 <img
                   src={brand.logo}
                   alt={brand.name}
-                  className="max-h-12 max-w-full object-contain grayscale hover:grayscale-0 transition-all"
+                  className="max-h-10 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
                   loading="lazy"
                   decoding="async"
+                  width="100"
+                  height="40"
                 />
               </div>
             ))}

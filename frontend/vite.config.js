@@ -15,5 +15,25 @@ export default defineConfig({
                 changeOrigin: true,
             }
         }
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom'],
+                    ui: ['lucide-react', 'zustand'],
+                    utils: ['axios']
+                }
+            }
+        },
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true
+            }
+        },
+        chunkSizeWarningLimit: 1000,
+        sourcemap: false
     }
 });

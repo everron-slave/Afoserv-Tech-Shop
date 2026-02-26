@@ -1,7 +1,6 @@
-import { ShoppingCart, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useCartStore } from '../store/cartStore'
-import toast from 'react-hot-toast'
+import { memo } from 'react'
 
 interface ProductCardProps {
   product: {
@@ -15,24 +14,11 @@ interface ProductCardProps {
   }
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
-  const addItem = useCartStore((state) => state.addItem)
-
-  const handleAddToCart = () => {
-    addItem({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      imageUrl: product.imageUrl,
-    })
-    toast.success('Added to cart!')
-  }
-
+const ProductCard = memo(({ product }: ProductCardProps) => {
   return (
     <div className="card hover:shadow-lg transition-shadow duration-300">
-      {/* Product Image */}
-      <Link to={`/products/${product.id}`} className="block aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
+      {/* Product Image - Reduced height */}
+      <Link to={`/products/${product.id}`} className="block aspect-[4/3] bg-gray-100 rounded-lg mb-2 overflow-hidden">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
@@ -42,55 +28,45 @@ const ProductCard = ({ product }: ProductCardProps) => {
             decoding="async"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
             No image
           </div>
         )}
       </Link>
 
-      {/* Product Info */}
-      <div className="space-y-3">
+      {/* Product Info - More compact */}
+      <div className="space-y-1">
         <div className="flex justify-between items-start">
-          <div>
-            <span className="text-sm text-primary-600 font-medium">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] text-primary-600 font-medium uppercase tracking-wide">
               {product.category}
             </span>
             <Link to={`/products/${product.id}`}>
-              <h3 className="text-lg font-semibold text-gray-900 mt-1 hover:text-primary-600 transition-colors">
+              <h3 className="text-sm font-semibold text-gray-900 mt-0.5 hover:text-primary-600 transition-colors line-clamp-1 truncate">
                 {product.name}
               </h3>
             </Link>
           </div>
           {product.rating && (
-            <div className="flex items-center text-amber-600">
-              <Star className="w-4 h-4 fill-current" />
-              <span className="ml-1 text-sm font-medium">{product.rating}</span>
+            <div className="flex items-center text-amber-600 ml-1 flex-shrink-0">
+              <Star className="w-2.5 h-2.5 fill-current" />
+              <span className="ml-0.5 text-[10px] font-medium">{product.rating}</span>
             </div>
           )}
         </div>
 
-        <p className="text-gray-600 text-sm line-clamp-2">
+        <p className="text-gray-600 text-[10px] line-clamp-1">
           {product.description}
         </p>
 
         <div className="flex justify-between items-center">
-          <div>
-            <span className="text-2xl font-bold text-gray-900">
-              ${product.price.toFixed(2)}
-            </span>
-          </div>
-
-          <button
-            onClick={handleAddToCart}
-            className="btn-primary flex items-center"
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            Add to Cart
-          </button>
+          <span className="text-lg font-bold text-gray-900">
+            ${product.price.toFixed(2)}
+          </span>
         </div>
       </div>
     </div>
   )
-}
+})
 
 export default ProductCard
