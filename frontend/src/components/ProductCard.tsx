@@ -1,6 +1,7 @@
 import { Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { memo } from 'react'
+import { formatPrice } from '../utils/currency'
 
 interface ProductCardProps {
   product: {
@@ -61,7 +62,7 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
 
         <div className="flex justify-between items-center">
           <span className="text-lg font-bold text-gray-900">
-            ${product.price.toFixed(2)}
+            {formatPrice(product.price)}
           </span>
         </div>
       </div>

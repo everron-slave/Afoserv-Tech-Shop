@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Heart } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -68,11 +68,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center text-gray-300">
                 <Phone className="w-5 h-5 mr-3 text-primary-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>+237 6 94 87 90 84</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <MapPin className="w-5 h-5 mr-3 text-primary-400" />
-                <span>123 Tech Street, San Francisco, CA 94107</span>
+                <span>Deido, Douala</span>
               </div>
             </div>
 
@@ -153,7 +153,7 @@ const Footer = () => {
                 Cookie Policy
               </Link>
               <div className="flex items-center text-gray-400">
-                Made with <Heart className="w-4 h-4 mx-1 text-red-500" /> by AFORSEV Team
+                Made by AFORSEV Team
               </div>
             </div>
           </div>

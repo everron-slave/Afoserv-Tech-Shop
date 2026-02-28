@@ -2,6 +2,7 @@ import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
 import { useCartStore } from '../store/cartStore'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { formatPrice, usdToFcfaFormatted } from '../utils/currency'
 
 const CartPage = () => {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } =
@@ -84,10 +85,10 @@ const CartPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     {item.name}
                   </h3>
-                  <p className="text-gray-600">${item.price.toFixed(2)} each</p>
+                  <p className="text-gray-600">{formatPrice(item.price)} each</p>
                 </div>
                 <div className="text-xl font-bold text-gray-900">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {usdToFcfaFormatted(item.price * item.quantity)}
                 </div>
               </div>
 
@@ -135,7 +136,7 @@ const CartPage = () => {
         <div className="space-y-4">
           <div className="flex justify-between">
             <span className="text-gray-600">Subtotal</span>
-            <span className="font-medium">${totalPrice.toFixed(2)}</span>
+            <span className="font-medium">{usdToFcfaFormatted(totalPrice)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Shipping</span>
@@ -146,19 +147,18 @@ const CartPage = () => {
           <div className="flex justify-between">
             <span className="text-gray-600">Tax</span>
             <span className="font-medium">
-              ${(totalPrice * 0.08).toFixed(2)}
+              {usdToFcfaFormatted(totalPrice * 0.08)}
             </span>
           </div>
           <div className="border-t pt-4">
             <div className="flex justify-between text-lg font-bold">
               <span>Total</span>
               <span>
-                $
-                {(
+                {usdToFcfaFormatted(
                   totalPrice +
                   (totalPrice > 50 ? 0 : 5) +
                   totalPrice * 0.08
-                ).toFixed(2)}
+                )}
               </span>
             </div>
           </div>

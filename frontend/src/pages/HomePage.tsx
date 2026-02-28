@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, Mail, Phone, ShoppingBag, Star, Heart } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
+import { formatPrice } from '../utils/currency'
 
 const HomePage = () => {
   // Product data for slideshow and sections - Optimized images with proper sizing
@@ -185,7 +186,7 @@ const HomePage = () => {
                     <h1 className="text-2xl md:text-4xl font-bold mb-3">{product.name}</h1>
                     <p className="text-base md:text-lg mb-4 text-primary-100 line-clamp-2 md:line-clamp-none">{product.description}</p>
                     <div className="flex items-center mb-4">
-                      <span className="text-xl md:text-2xl font-bold">${product.price}</span>
+                      <span className="text-xl md:text-2xl font-bold">{formatPrice(product.price)}</span>
                       <span className="ml-3 px-2 py-1 bg-white/20 rounded-full text-xs">Free Shipping</span>
                     </div>
                     <Link

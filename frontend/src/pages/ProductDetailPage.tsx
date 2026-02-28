@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingCart, Star, Shield, Truck, MessageCircle, Heart, Check } from 'lucide-react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, ShoppingCart, Star, Shield, Truck, Heart, Check } from 'lucide-react'
 import { useCartStore } from '../store/cartStore'
 import toast from 'react-hot-toast'
 import ProductCard from '../components/ProductCard'
+import { formatPrice } from '../utils/currency'
 
 // Product database for all products
 const productDatabase = [
@@ -392,6 +393,7 @@ const productDatabase = [
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const addItem = useCartStore((state) => state.addItem)
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
@@ -416,17 +418,12 @@ const ProductDetailPage = () => {
     toast.success(`Added ${quantity} ${product.name} to cart!`)
   }
 
-  const handleWhatsAppContact = () => {
-    const message = `Hello! I'm interested in the ${product.name} (Product ID: ${product.id}). Can you provide more details?`
-    const phoneNumber = '+1234567890' // Replace with actual support number
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-    window.open(url, '_blank')
-  }
 
   const handleBuyNow = () => {
     handleAddToCart()
-    // In a real app, this would redirect to checkout
-    toast.success('Product added! Proceed to checkout from your cart.')
+    // Redirect directly to checkout page
+    navigate('/checkout')
+    toast.success('Product added! Redirecting to checkout...')
   }
 
   return (
@@ -484,7 +481,7 @@ const ProductDetailPage = () => {
           {/* Price */}
           <div className="mb-8">
             <div className="flex items-center mb-4">
-              <span className="text-4xl font-bold">${product.price}</span>
+              <span className="text-4xl font-bold">{formatPrice(product.price)}</span>
               <span className="ml-4 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm">Free Shipping</span>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-600">
@@ -542,17 +539,6 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
-            {/* WhatsApp Contact Button with WhatsApp Logo */}
-            <button
-              onClick={handleWhatsAppContact}
-              className="mt-4 w-full bg-green-600 text-white hover:bg-green-700 py-3 rounded-lg font-semibold flex items-center justify-center"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              <span className="flex items-center">
-                <span className="font-bold">WhatsApp</span>
-                <span className="ml-1">Chat with Our Team</span>
-              </span>
-            </button>
           </div>
 
           {/* Features */}

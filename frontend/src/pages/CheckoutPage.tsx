@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice, usdToFcfaFormatted } from '../utils/currency';
 
 const CheckoutPage: React.FC = () => {
   const { items, totalPrice, clearCart } = useCartStore();
@@ -97,7 +98,7 @@ const CheckoutPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Total Amount:</span>
-                  <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                  <span className="font-medium">{usdToFcfaFormatted(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Items:</span>
@@ -176,9 +177,9 @@ const CheckoutPage: React.FC = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-medium text-gray-900">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            {usdToFcfaFormatted(item.price * item.quantity)}
                           </p>
-                          <p className="text-xs text-gray-500">${item.price.toFixed(2)} each</p>
+                          <p className="text-xs text-gray-500">{formatPrice(item.price)} each</p>
                         </div>
                       </div>
                     ))}
@@ -187,19 +188,19 @@ const CheckoutPage: React.FC = () => {
                   <div className="border-t pt-4">
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                      <span className="font-medium">{usdToFcfaFormatted(totalPrice)}</span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-600">Shipping</span>
-                      <span className="font-medium">$0.00</span>
+                      <span className="font-medium">FCFA0.00</span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-600">Tax</span>
-                      <span className="font-medium">$0.00</span>
+                      <span className="font-medium">FCFA0.00</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">
                       <span>Total</span>
-                      <span>${totalPrice.toFixed(2)}</span>
+                      <span>{usdToFcfaFormatted(totalPrice)}</span>
                     </div>
                   </div>
                 </>
@@ -343,10 +344,10 @@ const CheckoutPage: React.FC = () => {
                     onChange={handleInputChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   >
-                    <option value="US">United States</option>
-                    <option value="CA">Canada</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="AU">Australia</option>
+                    <option value="CM">Cameroon</option>
+                    <option value="CV">Cote d'ivore</option>
+                    <option value="NG">Nigeria</option>
+                    <option value="GA">Gabon</option>
                   </select>
                 </div>
               </div>
@@ -399,6 +400,36 @@ const CheckoutPage: React.FC = () => {
                       Cash on Delivery
                     </label>
                   </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      id="orange-money"
+                      name="paymentMethod"
+                      type="radio"
+                      value="orange-money"
+                      checked={formData.paymentMethod === 'orange-money'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                    />
+                    <label htmlFor="orange-money" className="ml-3 block text-sm font-medium text-gray-700">
+                      Orange Money
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      id="mtn-mobile-money"
+                      name="paymentMethod"
+                      type="radio"
+                      value="mtn-mobile-money"
+                      checked={formData.paymentMethod === 'mtn-mobile-money'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                    />
+                    <label htmlFor="mtn-mobile-money" className="ml-3 block text-sm font-medium text-gray-700">
+                      MTN Mobile Money
+                    </label>
+                  </div>
                 </div>
               </div>
               
@@ -437,7 +468,7 @@ const CheckoutPage: React.FC = () => {
                       Processing...
                     </span>
                   ) : (
-                    `Place Order - $${totalPrice.toFixed(2)}`
+                    `Place Order - ${usdToFcfaFormatted(totalPrice)}`
                   )}
                 </button>
               </div>

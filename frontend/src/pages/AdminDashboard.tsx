@@ -7,6 +7,7 @@ import {
   TrendingUp,
   ShoppingCart
 } from 'lucide-react';
+import { usdToFcfaFormatted } from '../utils/currency';
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState({
@@ -61,7 +62,7 @@ const AdminDashboard: React.FC = () => {
   const statCards = [
     {
       title: 'Total Revenue',
-      value: `$${stats.totalRevenue.toLocaleString()}`,
+      value: usdToFcfaFormatted(stats.totalRevenue),
       icon: <DollarSign className="h-6 w-6" />,
       change: `${stats.monthlyGrowth}%`,
       trend: 'up',
@@ -200,7 +201,7 @@ const AdminDashboard: React.FC = () => {
                         {order.customer}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${order.amount.toFixed(2)}
+                        {usdToFcfaFormatted(order.amount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.status)}`}>
