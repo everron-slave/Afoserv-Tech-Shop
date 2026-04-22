@@ -44,7 +44,7 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your_jwt_secret_key_here_min_32_chars
       JWT_REFRESH_SECRET: your_refresh_secret_key_here_min_32_chars
-      CORS_ORIGIN: http://localhost:5173
+      CORS_ORIGIN: http://localhost:5173,http://localhost:80
       PORT: 3000
     ports:
       - "3000:3000"
@@ -58,7 +58,19 @@ services:
         condition: service_healthy
     networks:
       - aforsev-network
-    command: npm run dev
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run dev"
+
+  frontend:
+    build: ./frontend
+    container_name: aforsev-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - aforsev-network
+    environment:
+      - VITE_API_URL=http://localhost:3000
 
 volumes:
   postgres_data:

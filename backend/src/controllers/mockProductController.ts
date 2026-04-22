@@ -175,6 +175,7 @@ export class MockProductController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**

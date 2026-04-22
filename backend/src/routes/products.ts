@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { MockProductController } from '../controllers/mockProductController';
+import { ProductController } from '../controllers/productController';
 import { validate } from '../middleware/validation';
 import { authenticate, authorize } from '../middleware/auth';
 import { apiLimiter } from '../middleware/rateLimiter';
@@ -18,7 +18,7 @@ router.use(apiLimiter);
 router.get(
   '/',
   validate(validators.productFilterSchema),
-  MockProductController.getProducts
+  ProductController.getProducts
 );
 
 /**
@@ -26,21 +26,21 @@ router.get(
  * @desc    Get all product categories
  * @access  Public
  */
-router.get('/categories', MockProductController.getCategories);
+router.get('/categories', ProductController.getCategories);
 
 /**
  * @route   GET /api/products/:id
  * @desc    Get single product by ID
  * @access  Public
  */
-router.get('/:id', MockProductController.getProductById);
+router.get('/:id', ProductController.getProductById);
 
 /**
  * @route   GET /api/products/featured
  * @desc    Get featured products
  * @access  Public
  */
-router.get('/featured', MockProductController.getFeaturedProducts);
+router.get('/featured', ProductController.getFeaturedProducts);
 
 // Admin routes - require authentication and admin role
 router.use(authenticate);
@@ -54,7 +54,7 @@ router.use(authorize('ADMIN'));
 router.post(
   '/',
   validate(validators.createProductSchema),
-  MockProductController.getProducts // Placeholder - would need implementation
+  ProductController.createProduct
 );
 
 /**
@@ -65,7 +65,7 @@ router.post(
 router.put(
   '/:id',
   validate(validators.updateProductSchema),
-  MockProductController.getProducts // Placeholder - would need implementation
+  ProductController.updateProduct
 );
 
 /**
@@ -73,6 +73,6 @@ router.put(
  * @desc    Delete product (soft delete)
  * @access  Private/Admin
  */
-router.delete('/:id', MockProductController.getProducts); // Placeholder - would need implementation
+router.delete('/:id', ProductController.deleteProduct);
 
 export { router };

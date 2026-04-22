@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { MockAuthController } from '../controllers/mockAuthController';
+import { AuthController } from '../controllers/authController';
 import { validate } from '../middleware/validation';
 import { authenticate } from '../middleware/auth';
 import { authLimiter, apiLimiter } from '../middleware/rateLimiter';
@@ -22,7 +22,7 @@ router.use(authLimiter);
 router.post(
   '/register',
   validate(validators.registerSchema),
-  MockAuthController.register
+  AuthController.register
 );
 
 /**
@@ -33,7 +33,7 @@ router.post(
 router.post(
   '/login',
   validate(validators.loginSchema),
-  MockAuthController.login
+  AuthController.login
 );
 
 /**
@@ -41,14 +41,14 @@ router.post(
  * @desc    Logout user
  * @access  Public
  */
-router.post('/logout', MockAuthController.logout);
+router.post('/logout', AuthController.logout);
 
 /**
  * @route   POST /api/auth/refresh
  * @desc    Refresh access token
  * @access  Public
  */
-router.post('/refresh', MockAuthController.refresh);
+router.post('/refresh', AuthController.refreshToken);
 
 // Protected routes - require authentication
 router.use(authenticate);
@@ -59,7 +59,7 @@ router.use(apiLimiter); // Regular rate limiting for authenticated routes
  * @desc    Get current user profile
  * @access  Private
  */
-router.get('/profile', MockAuthController.getProfile);
+router.get('/profile', AuthController.getProfile);
 
 /**
  * @route   PUT /api/auth/profile
@@ -69,7 +69,27 @@ router.get('/profile', MockAuthController.getProfile);
 router.put(
   '/profile',
   validate(validators.updateProfileSchema),
-  MockAuthController.getProfile // Placeholder - would need implementation
+  AuthController.updateProfile
+);
+
+/**
+ * @route   POST /api/auth/forgot-password
+ * @desc    Request password reset
+ * @access  Public
+ */
+router.post(
+  '/forgot-password',
+  AuthController.requestPasswordReset
+);
+
+/**
+ * @route   POST /api/auth/reset-password
+ * @desc    Reset password with token
+ * @access  Public
+ */
+router.post(
+  '/reset-password',
+  AuthController.resetPassword
 );
 
 export { router };

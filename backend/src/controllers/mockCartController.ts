@@ -140,6 +140,7 @@ export class MockCartController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -186,6 +187,7 @@ export class MockCartController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -226,6 +228,7 @@ export class MockCartController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -255,5 +258,6 @@ export class MockCartController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 }

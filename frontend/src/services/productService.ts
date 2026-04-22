@@ -52,8 +52,31 @@ export const productService = {
 
   // Create product (admin only)
   async createProduct(productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
-    const response = await api.post('/api/products', productData)
-    return response.data
+    console.log('📦 Creating product with data:', productData)
+    console.log('🌐 API base URL:', api.defaults.baseURL)
+    console.log('🔗 Full URL:', `${api.defaults.baseURL}/api/products`)
+    
+    try {
+      const response = await api.post('/api/products', productData)
+      console.log('✅ Product created successfully:', response.data)
+      return response.data
+    } catch (error: any) {
+      console.error('❌ Failed to create product:', error)
+      console.error('📊 Error details:', {
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          data: error.config?.data
+        }
+      })
+      throw error
+    }
   },
 
   // Update product (admin only)

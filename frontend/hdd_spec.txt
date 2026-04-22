@@ -1,0 +1,42 @@
+Features
+Kind 
+HDD
+component for 
+Surveillance system
+Hard drive capacity 
+10000 GB
+Storage drive buffer size 
+512 MB
+Hard drive interface transfer speed 
+6 Gbit/s
+Average hard drive transfer rate 
+272 Mbyte/s
+Interface 
+ATA Series III
+Hard drive rotation speed 
+7200
+Hard drive size 
+3.5
+Packaging information
+Quantity 
+1.0000
+Environmental conditions
+Off-temperature 
+-40 - 70
+Operating temperature 
+0 - 60
+Weight and dimensions
+Depth 
+147 mm
+Width 
+101.6 mm
+Height 
+26.1 mm
+Weight 
+750 g
+Other features
+Certification 
+BSMI, ICES-003/NMB-003, CE, FCC, KC, Maghreb, RCM, UKCA, VCCI, CB-Scheme, TUV, UL
+Basic Data
+Series 
+Purple Pro

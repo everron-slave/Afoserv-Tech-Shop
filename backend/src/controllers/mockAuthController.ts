@@ -98,6 +98,7 @@ export class MockAuthController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -161,6 +162,7 @@ export class MockAuthController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -234,6 +236,7 @@ export class MockAuthController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 
   /**
@@ -269,5 +272,6 @@ export class MockAuthController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 }

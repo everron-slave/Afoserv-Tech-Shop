@@ -22,7 +22,7 @@ export class CartController {
    * Helper: Get or create cart for user/session
    */
   private static async getOrCreateCart(userId?: string, sessionId?: string): Promise<CartWithItems> {
-    let cart: CartWithItems;
+    let cart: CartWithItems | null;
 
     if (userId) {
       // User cart - check if exists
@@ -45,7 +45,7 @@ export class CartController {
             },
           },
         },
-      }) as CartWithItems | null;
+      });
 
       if (!cart) {
         // Create new cart for user
@@ -93,7 +93,7 @@ export class CartController {
             },
           },
         },
-      }) as CartWithItems | null;
+      });
 
       if (!cart) {
         // Create new cart for guest
@@ -124,7 +124,12 @@ export class CartController {
       throw new Error('Either userId or sessionId is required');
     }
 
-    return cart!;
+    // At this point, cart should never be null because we either found or created one
+    if (!cart) {
+      throw new Error('Failed to get or create cart');
+    }
+    
+    return cart;
   }
 
   /**
@@ -683,5 +688,6 @@ export class CartController {
     } catch (error) {
       next(error);
     }
+    return;
   }
 }

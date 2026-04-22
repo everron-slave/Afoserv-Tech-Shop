@@ -31,7 +31,7 @@ const ContactPage = () => {
                 <Phone className="w-5 h-5 text-primary-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Phone</h3>
-                  <p className="text-gray-600">+1 (555) 123-4567</p>
+                  <p className="text-gray-600">+237 6 94 87 90 84</p>
                 </div>
               </div>
 
@@ -39,7 +39,7 @@ const ContactPage = () => {
                 <MapPin className="w-5 h-5 text-primary-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Address</h3>
-                  <p className="text-gray-600">123 Tech Street, Silicon Valley, CA 94000</p>
+                  <p className="text-gray-600">Deido, Douala</p>
                 </div>
               </div>
 
@@ -47,7 +47,7 @@ const ContactPage = () => {
                 <MessageSquare className="w-5 h-5 text-primary-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">WhatsApp</h3>
-                  <p className="text-gray-600">+1 (555) 123-4567</p>
+                  <p className="text-gray-600">+237 6 94 87 90 84</p>
                 </div>
               </div>
             </div>

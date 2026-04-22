@@ -17,9 +17,9 @@ interface ProductCardProps {
 
 const ProductCard = memo(({ product }: ProductCardProps) => {
   return (
-    <div className="card hover:shadow-lg transition-shadow duration-300">
+    <div className="card hover:shadow-lg transition-shadow duration-300 touch-manipulation">
       {/* Product Image - Reduced height */}
-      <Link to={`/products/${product.id}`} className="block aspect-[4/3] bg-gray-100 rounded-lg mb-2 overflow-hidden">
+      <Link to={`/products/${product.id}`} className="block aspect-[4/3] bg-gray-100 mb-2 overflow-hidden focus-ring rounded-t-lg">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
@@ -29,21 +29,21 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
             decoding="async"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-            No image
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            <span className="text-xs">No image</span>
           </div>
         )}
       </Link>
 
       {/* Product Info - More compact */}
-      <div className="space-y-1">
+      <div className="p-4 space-y-1">
         <div className="flex justify-between items-start">
           <div className="min-w-0 flex-1">
             <span className="text-[10px] text-primary-600 font-medium uppercase tracking-wide">
               {product.category}
             </span>
             <Link to={`/products/${product.id}`}>
-              <h3 className="text-sm font-semibold text-gray-900 mt-0.5 hover:text-primary-600 transition-colors line-clamp-1 truncate">
+              <h3 className="text-sm font-semibold text-gray-900 mt-0.5 hover:text-primary-600 transition-colors line-clamp-1 truncate focus-ring rounded px-1 py-0.5 -mx-1 -my-0.5">
                 {product.name}
               </h3>
             </Link>
@@ -60,7 +60,7 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
           {product.description}
         </p>
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center pt-1">
           <span className="text-lg font-bold text-gray-900">
             {formatPrice(product.price)}
           </span>

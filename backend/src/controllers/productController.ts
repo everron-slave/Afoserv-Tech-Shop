@@ -309,4 +309,20 @@ export class ProductController {
       next(error);
     }
   }
+
+  /**
+   * Get featured products (limited to 6)
+   */
+  static async getFeaturedProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Set query parameters for featured products
+      req.query.featured = 'true';
+      req.query.limit = '6';
+      
+      // Reuse the getProducts logic
+      return ProductController.getProducts(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

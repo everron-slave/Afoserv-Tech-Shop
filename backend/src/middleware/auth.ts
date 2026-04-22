@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-interface JwtPayload {
-  userId: string;
-  email: string;
-  role: string;
-}
+import { JwtService, JwtPayload } from '../utils/jwt';
 
 declare global {
   namespace Express {
@@ -21,6 +16,26 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ) => {
+  // Development bypass - ONLY enabled with explicit environment variable
+  // This is for testing purposes only and should NEVER be enabled in production
+  if (process.env.NODE_ENV === 'development' && process.env.ALLOW_DEV_AUTH_BYPASS === 'true') {
+    // Check for explicit development bypass header
+    const devBypass = req.headers['x-dev-bypass'] === 'true';
+    
+    if (devBypass) {
+      // Attach a mock admin user for development testing ONLY
+      req.user = {
+        userId: 'dev-user-id',
+        email: 'dev@example.com',
+        role: 'USER' // Default to USER role, not ADMIN
+      };
+      req.token = 'dev-bypass-token';
+      console.warn('⚠️ SECURITY WARNING: Development authentication bypass enabled for:', req.path);
+      console.warn('⚠️ This should NEVER be enabled in production environment');
+      return next();
+    }
+  }
+
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
@@ -30,8 +45,8 @@ export const authenticate = (
 
     const token = authHeader.split(' ')[1];
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    // Verify token using JwtService
+    const decoded = JwtService.verifyAccessToken(token);
 
     // Attach user to request
     req.user = decoded;

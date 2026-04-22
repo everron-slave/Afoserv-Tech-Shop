@@ -1,0 +1,246 @@
+Screen
+Pixel density 
+516 pixels per inch
+Screen size 
+6.7 in
+Screen shape 
+Flat
+Display the name of the technology marketing 
+Dynamic AMOLED 2X
+Screen glass type 
+Gorilla Glass
+Gorilla Glass screen 
+Gorilla Glass Victus 2
+Screen brightness 
+1500 CDM2
+Brand-specific technologies 
+Always-on display
+Number of colors displayed 
+16 million colors
+Maximum discount rate 
+120,000
+Screen resolution 
+3120 x 1440
+Connectivity
+USB version 
+3.2 Gen 1 (3.1 Gen 1)
+Headset connection 
+USB_Type_C
+USB connector 
+USB Type-C
+Autonomy
+Battery life per cycle 
+2405 m
+Battery life in cycles 
+2000
+Repeated free-fall reliability class 
+HAS
+Repairability index 
+C
+Energy efficiency range 
+A to G
+Energy efficiency class 
+HAS
+Code (IP) International Protection 
+IP68
+representation / realization
+Wireless charging 
+Yes
+Fingerprint reader 
+Yes
+Fast charging 
+Yes
+Processor
+Processor family 
+Snapdragon
+Processor model 
+8 Elite
+Turbo processor frequency 
+4.47 GHz
+Number of processor cores 
+8
+Network
+Mobile network generation 
+5G
+SIM card capacity 
+Dual SIM
+3G Standards 
+UMTS
+4G standard 
+TD-LTE & FDD-LTE
+Wi-Fi standard 
+Wi-Fi 7 (802.11be)
+5G Standard 
+Sub6 FDD, Sub6 SDL, Sub6 TDD
+Wi-Fi standards 
+802.11a, 802.11b, 802.11g, Wi-Fi 5 (802.11ac), Wi-Fi 6E (802.11ax), Wi-Fi 6 (802.11ax), Wi-Fi 7 (802.11be)
+Compatible 5G bands 
+700, 850, 900, 1900, 2100, 2300, 2500, 2600, 3500, 3700
+Bluetooth 
+Yes
+MIMO (multiple inputs, multiple outputs) 
+Yes
+Wi-Fi Direct 
+Yes
+Modulation 
+4096-QAM
+Supported 3G bands 
+850, 900, 1900, 2100
+4G support 
+700, 850, 900, 1500, 1800, 1900, 2100, 2300, 2500, 2600
+SIM card type 
+NanoSIM + eSIM
+Contactless payment 
+Yes
+Bluetooth model 
+5.4
+Camera
+Rear camera sensor size 
+1/1.3"
+Rear camera second sensor size 
+1/2.55"
+Resolution of the second rear camera (digital) 
+12 MP
+Rear camera opening number 
+1.7
+Opening number of the second rear camera 
+2.2
+Rear camera pixel size 
+0.6 µm
+Pixel size of the second rear camera 
+1.4 µm
+Rear camera field of view angle 
+85°
+Field of view angle of the second rear camera 
+120°
+Front camera type 
+Single camera
+Front camera sensor size 
+1/3.2"
+Front camera opening number 
+2.2
+Front camera pixel size 
+1.12 µm
+Front camera field of view angle 
+85°
+Rear camera flash 
+Yes
+Rear camera type 
+Dual camera
+Maximum cadence 
+240 fps
+Rear camera resolution (digital) 
+200 MP
+Flash type 
+LED
+Video capture resolution 
+4320 x 7680
+Front camera resolution (digital) 
+12 MP
+Optical zoom 
+2x
+Digital zoom 
+10x
+Image stabilizer type 
+Optical Image Stabilization (OIS)
+Auto focus 
+Yes
+Image stabilizer 
+Yes
+Night mode 
+Yes
+Panorama 
+Yes
+Portrait Mode 
+Yes
+Idle speed 
+240fps in FHD, 120fps in FHD, 120fps in UHD
+Slow motion 
+Yes
+Storage media
+Internal storage capacity 
+512 GB
+RAM capacity 
+12 GB
+Compatible memory cards 
+Not covered
+multimedia
+Supported video format 
+3G2, 3GP, AVI, FLV, M4A, MKV, WEBM
+Supported audio formats 
+3GA, AAC, AMR, APE, AWB, DFF, DSF, FLAC, IMY, M4A, MID, MIDI, MP3, MXMF, OGA, OGG, OTA, RTTTL, RTX, WAV, XMF
+Navigation
+GPS (satellite) 
+Yes
+GLONASS 
+Yes
+BeiDou 
+Yes
+Galileo 
+Yes
+Quasi-Zenith Satellite System (QZSS) 
+Yes
+Location of position 
+Yes
+Design
+Product color 
+Blue
+Format 
+Rod
+Color name 
+Titanium Icyblue
+Code (IP) International Protection 
+IP68
+Battery
+Battery technology 
+Lithium-Ion (Li-Ion)
+Battery capacity 
+3900 mAh
+ADR classification 
+Li-ion < 300 Wh
+Package contents
+AC adapter included 
+No
+Detectors
+Accelerometer 
+Yes
+Ambient light sensor 
+Yes
+Gyroscope 
+Yes
+Proximity sensor 
+Yes
+Hall sensor 
+Yes
+Barometer 
+Yes
+Geomagnetic sensor 
+Yes
+Software
+Platform 
+Android
+Operating system range 
+One UI 7.0
+Operating system installed 
+Android 15
+Power
+USB power capacity 
+Yes
+USB Type-C charging port 
+Yes
+Charging power required (min) 
+10.0000
+Maximum charging power required 
+25,000
+Weight and dimensions
+Depth 
+5.8 mm
+Width 
+75.6 mm
+Height 
+158.2 mm
+Weight 
+163 g
+Basic Data
+Series 
+Galaxy S25 Edge

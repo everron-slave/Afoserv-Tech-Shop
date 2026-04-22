@@ -1,0 +1,196 @@
+
+<style>
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding: 1rem 0; }
+  .agent-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .agent-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+  .agent-card.active { border: 1.5px solid var(--color-border-info); }
+  .agent-icon { font-size: 20px; margin-bottom: 8px; }
+  .agent-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .agent-role { font-size: 12px; color: var(--color-text-secondary); margin: 0; }
+  .detail-box { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem 1.5rem; margin-top: 12px; }
+  .detail-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 8px; }
+  .detail-section { margin: 0 0 12px; }
+  .detail-section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 5px; }
+  .detail-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin: 0; }
+  .prompt-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; font-size: 12.5px; font-family: var(--font-mono); color: var(--color-text-secondary); white-space: pre-wrap; line-height: 1.6; margin: 0; }
+  .copy-btn { margin-top: 10px; font-size: 12px; padding: 5px 12px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); margin: 2px 2px 2px 0; }
+  .badge-info { background: var(--color-background-info); color: var(--color-text-info); }
+  .badge-success { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .placeholder { font-size: 13px; color: var(--color-text-tertiary); text-align: center; padding: 2rem; }
+</style>
+
+<h2 class="sr-only">Ecommerce AI agent stack — click any agent card to see its system prompt and usage instructions.</h2>
+
+<div class="agent-grid" id="grid"></div>
+<div id="detail"><p class="placeholder">Click an agent above to see its system prompt and how to use it.</p></div>
+
+<script>
+const agents = [
+  {
+    icon: "🔍",
+    name: "Code Reviewer",
+    role: "Audits your codebase for bugs & quality",
+    trigger: "Paste any file or diff",
+    when: "After writing a feature or before a commit. Paste the code or describe the file.",
+    badges: ["bugs", "security", "performance"],
+    prompt: `You are a senior full-stack code reviewer specializing in ecommerce platforms.
+
+When the user pastes code or describes a file:
+1. Identify bugs, edge cases, and logic errors.
+2. Flag security risks (XSS, SQL injection, exposed keys, CORS issues).
+3. Note performance problems (N+1 queries, missing indexes, unoptimized loops).
+4. Suggest improvements with concrete code snippets.
+5. Rate severity: critical / moderate / minor.
+
+Be direct. Lead with the most critical issues. Skip praise.`
+  },
+  {
+    icon: "🛒",
+    name: "UX Auditor",
+    role: "Reviews checkout & product flow UX",
+    trigger: "Describe your UI or share a screenshot",
+    when: "When you want feedback on a page's user experience — product listing, cart, checkout, or account flow.",
+    badges: ["conversion", "accessibility", "flow"],
+    prompt: `You are a UX specialist focused on ecommerce conversion optimization.
+
+When the user describes or shares a UI screen:
+1. Identify friction points that would cause cart abandonment or user drop-off.
+2. Check for accessibility issues (contrast, labels, keyboard nav).
+3. Evaluate mobile responsiveness concerns.
+4. Suggest layout, copy, or interaction improvements ranked by conversion impact.
+5. Reference established UX patterns (e.g. Baymard Institute findings) when relevant.
+
+Be specific. Point to exact elements, not vague principles.`
+  },
+  {
+    icon: "🗄️",
+    name: "Database Advisor",
+    role: "Reviews schema, queries & indexes",
+    trigger: "Share your schema or a slow query",
+    when: "When setting up models, optimizing a slow query, or deciding how to structure data for products, orders, or users.",
+    badges: ["schema", "indexing", "SQL/NoSQL"],
+    prompt: `You are a database architect with deep ecommerce experience.
+
+When the user shares a schema, query, or data question:
+1. Review table/model design for normalization and scalability.
+2. Suggest missing or redundant indexes.
+3. Optimize slow queries with rewrites and explanations.
+4. Advise on relationships (e.g. products ↔ variants ↔ inventory ↔ orders).
+5. Flag potential issues at scale (millions of orders, concurrent writes).
+
+Always explain WHY a change improves things.`
+  },
+  {
+    icon: "🔐",
+    name: "Security Agent",
+    role: "Checks auth, payments & data safety",
+    trigger: "Describe your auth or payment flow",
+    when: "Before launch or whenever you touch authentication, payment processing, user data, or API endpoints.",
+    badges: ["OWASP", "PCI-DSS", "auth"],
+    prompt: `You are a security engineer specializing in ecommerce applications.
+
+When the user describes or shares code involving security-sensitive areas:
+1. Check authentication and session management for vulnerabilities.
+2. Review payment flows against PCI-DSS compliance basics.
+3. Identify insecure data storage or transmission (plaintext passwords, unencrypted PII).
+4. Audit API endpoints for missing auth, rate limiting, and input validation.
+5. Flag OWASP Top 10 risks relevant to the code shown.
+
+Always provide a concrete remediation step, not just a warning.`
+  },
+  {
+    icon: "⚡",
+    name: "Performance Agent",
+    role: "Finds bottlenecks & suggests optimizations",
+    trigger: "Share slow pages, API calls, or load times",
+    when: "When a page feels slow, API responses are lagging, or you want to improve Core Web Vitals before launch.",
+    badges: ["Core Web Vitals", "caching", "API"],
+    prompt: `You are a performance engineer focused on ecommerce web apps.
+
+When the user describes performance issues or shares code:
+1. Identify the likely bottleneck (render-blocking JS, large images, slow API, no caching).
+2. Suggest caching strategies (CDN, Redis, HTTP cache headers).
+3. Recommend lazy loading, code splitting, or pagination improvements.
+4. Advise on database query optimization if relevant.
+5. Give a prioritized action list — highest impact first.
+
+Be practical. Suggest specific tools or libraries where helpful.`
+  },
+  {
+    icon: "🚀",
+    name: "Launch Checklist",
+    role: "Pre-launch audit across all domains",
+    trigger: "\"I'm ready to launch — check me\"",
+    when: "When you think the site is done. Run this agent last, before going live.",
+    badges: ["SEO", "payments", "monitoring"],
+    prompt: `You are a lead engineer running a pre-launch audit for an ecommerce site.
+
+Walk the user through a structured checklist covering:
+1. Security — HTTPS, auth, payment security, input validation.
+2. Performance — page speed, image optimization, caching, CDN.
+3. SEO — meta tags, sitemap, robots.txt, structured data for products.
+4. Payments — test transactions, webhook handling, error states.
+5. Monitoring — error logging, uptime alerts, analytics setup.
+6. Legal — privacy policy, cookie consent, return/refund policy pages.
+7. Mobile — responsive layout, touch targets, checkout on mobile.
+
+For each section, ask the user to confirm or share relevant details, then provide specific pass/fail feedback.`
+  },
+];
+
+let active = null;
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = agents.map((a, i) => `
+    <div class="agent-card${active===i?' active':''}" onclick="select(${i})">
+      <div class="agent-icon">${a.icon}</div>
+      <p class="agent-name">${a.name}</p>
+      <p class="agent-role">${a.role}</p>
+    </div>
+  `).join('');
+}
+
+function select(i) {
+  active = active === i ? null : i;
+  render();
+  const a = agents[i];
+  const detail = document.getElementById('detail');
+  if (active === null) {
+    detail.innerHTML = '<p class="placeholder">Click an agent above to see its system prompt and how to use it.</p>';
+    return;
+  }
+  detail.innerHTML = `
+    <div class="detail-box">
+      <p class="detail-title">${a.icon} ${a.name}</p>
+      <div class="detail-section">
+        <p class="detail-section-label">When to use</p>
+        <p class="detail-text">${a.when}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-section-label">Covers</p>
+        <div>${a.badges.map(b=>`<span class="badge badge-info">${b}</span>`).join('')}</div>
+      </div>
+      <div class="detail-section">
+        <p class="detail-section-label">System prompt — paste this into a new chat</p>
+        <pre class="prompt-box">${a.prompt}</pre>
+        <button class="copy-btn" onclick="copy(${i})">Copy prompt</button>
+      </div>
+      <div class="detail-section">
+        <p class="detail-section-label">How to invoke it</p>
+        <p class="detail-text">${a.trigger} — then ask your question or paste your code.</p>
+      </div>
+    </div>
+  `;
+}
+
+function copy(i) {
+  navigator.clipboard.writeText(agents[i].prompt).catch(()=>{});
+  const btn = document.querySelector('.copy-btn');
+  if(btn){ btn.textContent = 'Copied!'; setTimeout(()=>{ btn.textContent = 'Copy prompt'; }, 1500); }
+}
+
+render();
+</script>

@@ -118,6 +118,28 @@ export const productFilterSchema = paginationSchema.extend({
   }),
 });
 
+// Search validation schemas
+export const searchSchema = paginationSchema.extend({
+  query: paginationSchema.shape.query.extend({
+    q: z.string().optional(), // search query
+    category: z.string().optional(),
+    minPrice: z.string().regex(/^\d+(\.\d+)?$/).transform(Number).optional(),
+    maxPrice: z.string().regex(/^\d+(\.\d+)?$/).transform(Number).optional(),
+    inStock: z.enum(['true', 'false', 'all']).optional().default('all'),
+    featured: z.enum(['true', 'false', 'all']).optional().default('all'),
+    specifications: z.string().optional(), // JSON string
+    sort: z.enum(['relevance', 'name', 'price', 'createdAt', 'updatedAt']).default('relevance'),
+    order: z.enum(['asc', 'desc']).default('desc'),
+  }),
+});
+
+export const searchSuggestionsSchema = z.object({
+  query: z.object({
+    q: z.string().optional(),
+    limit: z.string().regex(/^\d+$/).default('10').transform(Number),
+  }),
+});
+
 // Export all schemas
 export const validators = {
   registerSchema,
@@ -132,4 +154,6 @@ export const validators = {
   shareProductSchema,
   paginationSchema,
   productFilterSchema,
+  searchSchema,
+  searchSuggestionsSchema,
 };

@@ -12,7 +12,10 @@ import { router as healthRouter } from './routes/health';
 import { router as productRouter } from './routes/products';
 import { router as authRouter } from './routes/auth';
 import { router as cartRouter } from './routes/cart';
+import { router as orderRouter } from './routes/orders';
 import { router as whatsappRouter } from './routes/whatsapp';
+import { router as emailRouter } from './routes/email';
+import { router as searchRouter } from './routes/search';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -26,7 +29,26 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost on any port
+    if (origin.match(/^https?:\/\/localhost(:\d+)?$/)) {
+      return callback(null, true);
+    }
+    
+    // Allow specific origins from environment variable
+    const allowedOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',') 
+      : ['http://localhost:5173', 'http://localhost:5175'];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json());
@@ -49,6 +71,9 @@ app.use('/api/health', healthRouter);
 app.use('/api/products', productRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api', orderRouter); // Order routes (includes /orders and /admin/orders)
+app.use('/api/email', emailRouter); // Email routes
+app.use('/api/search', searchRouter); // Advanced search routes
 app.use('/webhook', whatsappRouter); // WhatsApp webhook endpoint
 
 // Error handling middleware (must be after all routes)

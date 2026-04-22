@@ -1,0 +1,150 @@
+Management characteristics
+Switch type 
+Managed
+Switch bank 
+L2/L3/L4
+Web-based management 
+Yes
+Quality of Service (QoS) 
+Yes
+Managed in the Cloud 
+Yes
+ARP Inspection 
+Yes
+System event log 
+Yes
+Security
+DHCP Functions 
+DHCP client, DHCP snooping
+Access Control List (ACL) 
+Yes
+IGMP filtering 
+Yes
+BPDU filtering/protection 
+Yes
+SSH/SSL support 
+Yes
+Loop protection 
+Yes
+Multicasting features
+Support for multi-channel distribution 
+Yes
+PoE (Power over Ethernet)
+Ethernet connection, supporting power delivery via this port (PoE) 
+No
+Connectivity
+Number of basic switching RJ-45 Ethernet ports 
+24
+Basic switching RJ-45 Ethernet port type 
+Gigabit Ethernet (10/100/1000)
+Number of SFP+ module slots 
+4
+Number of SFP module slots 
+4
+representation / realization
+Flash memory 
+256 MB
+Internal memory 
+512 MB
+Processor frequency 
+800 MHz
+Processor model 
+ARM Cortex-A9
+Fanless 
+Yes
+Memory type 
+SDRAM / Flash
+Integrated into the processor 
+Yes
+Network
+10G support 
+No
+Ethernet LAN: data transfer rate 
+10, 1000, 100 Mbit/s
+Copper Ethernet cabling technology 
+1000BASE-T
+Flow control assistance 
+Yes
+Port mirroring 
+Yes
+IP Routing 
+Yes
+Full duplex 
+Yes
+Input routing 
+32
+Active bond detection 
+Yes
+VLAN support 
+Yes
+Link aggregation 
+Yes
+Automatic detection 
+Yes
+Flow rate limitation 
+Yes
+Spanning Tree Protocols (STP) 
+Yes
+Number of VLANs 
+4093
+Design
+Mounting grid 
+Yes
+Product color 
+White
+Stackable 
+Yes
+Format 
+1U
+Environmental conditions
+Relative humidity level (storage) 
+15 - 95
+Off-temperature 
+-40 - 70
+Operating altitude 
+0 - 3000
+Operating relative humidity (HH) 
+15 - 95
+Operating temperature 
+0 - 40
+Data transmission
+Switching capacity 
+176 Gbit/s
+Speed 
+130.95 Mpps
+MAC address book 
+16,000 entries
+Latency (10-100 Mbps) 
+4.5 µs
+Latency (1 Gbps) 
+2.2 µs
+Latency (10 Gbps) 
+1.2 µs
+Support for Jumbo Frames 
+Yes
+Giant frames 
+9216
+Packet cache memory 
+1.5 MB
+Power
+Consumption (max) 
+36.9000
+AC input voltage 
+200-240 V
+Power supply included 
+Yes
+Power source 
+Sector
+Input current 
+0.2 A
+AC input frequency 
+50-60 Hz
+Weight and dimensions
+Depth 
+442.5 mm
+Width 
+43.9 mm
+Height 
+282.4 mm
+Weight 
+3130 g
