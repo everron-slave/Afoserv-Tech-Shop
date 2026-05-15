@@ -2,8 +2,12 @@ import { Router } from 'express';
 import { OrderController } from '../controllers/orderController';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/auth';
+import cookieParser from 'cookie-parser';
 
 const router = Router();
+
+// Parse cookies for session ID (needed for guest cart lookup)
+router.use(cookieParser());
 
 // Public routes (for guest checkout)
 router.post('/orders', OrderController.createOrder);

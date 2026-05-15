@@ -160,11 +160,11 @@ export const mockOrderService = {
       userId: 'user-' + Math.floor(Math.random() * 1000),
       totalAmount: Math.floor(Math.random() * 5000) + 100,
       status: 'PENDING',
-      shippingAddress: orderData.shippingAddress,
-      billingAddress: orderData.billingAddress || orderData.shippingAddress,
+      shippingAddress: orderData.address || '',
+      billingAddress: orderData.address || '',
       paymentMethod: orderData.paymentMethod,
       paymentStatus: 'PENDING',
-      notes: orderData.notes || '',
+      notes: orderData.customerName ? `Customer: ${orderData.customerName}, Email: ${orderData.email || 'N/A'}, Phone: ${orderData.phone || 'N/A'}` : '',
       items: [
         {
           id: `item-${Date.now()}-1`,

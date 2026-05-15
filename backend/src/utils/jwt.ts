@@ -17,14 +17,17 @@ export class JwtService {
   private static readonly JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
   private static readonly ACCESS_TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
   private static readonly REFRESH_TOKEN_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+  private static readonly REMEMBER_ME_EXPIRES_IN = process.env.JWT_REMEMBER_ME_EXPIRES_IN || '30d';
 
   /**
    * Generate access token for a user
    */
-  static generateAccessToken(payload: JwtPayload): string {
+  static generateAccessToken(payload: JwtPayload, rememberMe?: boolean): string {
     if (!this.JWT_SECRET) {
       throw new Error('JWT_SECRET environment variable is not set');
     }
+
+    const expiresIn = rememberMe ? this.REMEMBER_ME_EXPIRES_IN : this.ACCESS_TOKEN_EXPIRES_IN;
 
     return jwt.sign(
       {
@@ -33,17 +36,19 @@ export class JwtService {
         role: payload.role,
       },
       this.JWT_SECRET,
-      { expiresIn: this.ACCESS_TOKEN_EXPIRES_IN as any }
+      { expiresIn: expiresIn as any }
     );
   }
 
   /**
    * Generate refresh token for a user
    */
-  static generateRefreshToken(payload: RefreshTokenPayload): string {
+  static generateRefreshToken(payload: RefreshTokenPayload, rememberMe?: boolean): string {
     if (!this.JWT_REFRESH_SECRET) {
       throw new Error('JWT_REFRESH_SECRET environment variable is not set');
     }
+
+    const expiresIn = rememberMe ? this.REMEMBER_ME_EXPIRES_IN : this.REFRESH_TOKEN_EXPIRES_IN;
 
     return jwt.sign(
       {
@@ -52,7 +57,7 @@ export class JwtService {
         role: payload.role,
       },
       this.JWT_REFRESH_SECRET,
-      { expiresIn: this.REFRESH_TOKEN_EXPIRES_IN as any }
+      { expiresIn: expiresIn as any }
     );
   }
 
@@ -104,7 +109,7 @@ export class JwtService {
   /**
    * Generate both access and refresh tokens for a user
    */
-  static generateTokens(user: { id: string; email: string; role: string }): {
+  static generateTokens(user: { id: string; email: string; role: string }, rememberMe?: boolean): {
     accessToken: string;
     refreshToken: string;
   } {
@@ -115,8 +120,8 @@ export class JwtService {
     };
 
     return {
-      accessToken: this.generateAccessToken(payload),
-      refreshToken: this.generateRefreshToken(payload),
+      accessToken: this.generateAccessToken(payload, rememberMe),
+      refreshToken: this.generateRefreshToken(payload, rememberMe),
     };
   }
 }

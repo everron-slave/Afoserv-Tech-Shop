@@ -39,18 +39,22 @@ services:
     build: ./backend
     container_name: aforsev-backend
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DATABASE_URL: postgresql://aforsev:aforsev123@postgres:5432/aforsev_db?schema=public
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your_jwt_secret_key_here_min_32_chars
       JWT_REFRESH_SECRET: your_refresh_secret_key_here_min_32_chars
       CORS_ORIGIN: http://localhost:5173,http://localhost:80
       PORT: 3000
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: "587"
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      FROM_EMAIL: ${FROM_EMAIL:-noreply@aforsev.com}
+      FROM_NAME: AFORSEV E-commerce
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@aforsev.com}
     ports:
       - "3000:3000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -58,7 +62,7 @@ services:
         condition: service_healthy
     networks:
       - aforsev-network
-    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run dev"
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && node dist/server.js"
 
   frontend:
     build: ./frontend

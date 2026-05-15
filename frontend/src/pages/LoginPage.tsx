@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuthStore } from '../store/authStore'
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuthStore()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -17,14 +18,28 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Client-side validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    if (!formData.password) {
+      toast.error('Password is required')
+      return
+    }
+
     setIsLoading(true)
     
     try {
       await login(formData.email, formData.password, formData.rememberMe)
       toast.success('Login successful!')
       
-      // Redirect to home page or previous page
-      navigate('/')
+      // Redirect to previous page if coming from ProtectedRoute, otherwise home
+      const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
+      navigate(from, { replace: true })
     } catch (error: any) {
       console.error('Login error:', error)
       toast.error(error.message || 'Login failed. Please check your credentials.')

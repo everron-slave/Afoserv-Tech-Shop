@@ -198,8 +198,17 @@ export const useAuthStore = create<AuthStore>()(
         try {
           await get().getProfile()
         } catch (error) {
-          console.error('Auth initialization error:', error)
-          set({ isAuthenticated: false, user: null })
+          // Token might be expired — attempt refresh before giving up
+          console.error('Profile fetch failed, attempting token refresh:', error)
+          try {
+            const refreshed = await get().refreshToken()
+            if (!refreshed) {
+              set({ isAuthenticated: false, user: null })
+            }
+          } catch (refreshError) {
+            console.error('Token refresh also failed during initialization:', refreshError)
+            set({ isAuthenticated: false, user: null })
+          }
         }
       }
     }),

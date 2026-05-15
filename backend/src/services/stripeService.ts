@@ -1,7 +1,5 @@
 import Stripe from 'stripe';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database';
 
 // Initialize Stripe with the secret key from environment variables
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_...';

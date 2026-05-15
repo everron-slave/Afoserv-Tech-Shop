@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-// Mock user data
+// Mock user data with real bcrypt hashes
 const mockUsers = [
   {
     id: '1',
     email: 'user@example.com',
-    passwordHash: '$2a$12$K9q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q', // hashed "password123"
+    passwordHash: bcrypt.hashSync('password123', 10),
     name: 'Test User',
     role: 'USER',
     emailVerified: true,
@@ -16,7 +17,7 @@ const mockUsers = [
   {
     id: '2',
     email: 'admin@example.com',
-    passwordHash: '$2a$12$K9q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q8q', // hashed "admin123"
+    passwordHash: bcrypt.hashSync('admin123', 10),
     name: 'Admin User',
     role: 'ADMIN',
     emailVerified: true,
@@ -44,16 +45,19 @@ export class MockAuthController {
       if (existingUser) {
         return res.status(400).json({
           success: false,
+          message: 'User already exists',
           error: 'User already exists',
         });
       }
 
-      // In a real app, we would hash the password here
-      // For mock purposes, we'll just create a user
+      // Hash password properly (same as real controller)
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+
       const newUser = {
         id: (mockUsers.length + 1).toString(),
         email,
-        passwordHash: `$2a$12$hashed_${password}`, // Mock hash
+        passwordHash,
         name,
         role: 'USER' as const,
         emailVerified: false,
@@ -61,7 +65,7 @@ export class MockAuthController {
         updatedAt: new Date(),
       };
 
-      // Add to mock users (in real app, save to database)
+      // Add to mock users
       mockUsers.push(newUser);
 
       // Generate tokens
@@ -81,15 +85,16 @@ export class MockAuthController {
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
       // Remove password hash from response
-      const { passwordHash, ...userWithoutPassword } = newUser;
+      const { passwordHash: _, ...userWithoutPassword } = newUser;
 
       res.status(201).json({
         success: true,
+        message: 'User registered successfully',
         data: {
           user: userWithoutPassword,
           accessToken,
@@ -113,17 +118,18 @@ export class MockAuthController {
       if (!user) {
         return res.status(401).json({
           success: false,
+          message: 'Invalid credentials',
           error: 'Invalid credentials',
         });
       }
 
-      // In a real app, we would verify the password hash
-      // For mock purposes, we'll accept any password
-      const passwordValid = true; // Simplified for mock
+      // Verify password using bcrypt (same as real controller)
+      const passwordValid = await bcrypt.compare(password, user.passwordHash);
 
       if (!passwordValid) {
         return res.status(401).json({
           success: false,
+          message: 'Invalid credentials',
           error: 'Invalid credentials',
         });
       }
@@ -145,15 +151,16 @@ export class MockAuthController {
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
       // Remove password hash from response
-      const { passwordHash, ...userWithoutPassword } = user;
+      const { passwordHash: _, ...userWithoutPassword } = user;
 
       res.json({
         success: true,
+        message: 'Login successful',
         data: {
           user: userWithoutPassword,
           accessToken,
@@ -174,7 +181,7 @@ export class MockAuthController {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
       });
 
       res.json({
@@ -196,6 +203,7 @@ export class MockAuthController {
       if (!refreshToken) {
         return res.status(401).json({
           success: false,
+          message: 'Refresh token required',
           error: 'Refresh token required',
         });
       }
@@ -207,6 +215,7 @@ export class MockAuthController {
       } catch (error) {
         return res.status(401).json({
           success: false,
+          message: 'Invalid refresh token',
           error: 'Invalid refresh token',
         });
       }
@@ -216,6 +225,7 @@ export class MockAuthController {
       if (!user) {
         return res.status(401).json({
           success: false,
+          message: 'User not found',
           error: 'User not found',
         });
       }
@@ -229,6 +239,7 @@ export class MockAuthController {
 
       res.json({
         success: true,
+        message: 'Token refreshed successfully',
         data: {
           accessToken,
         },
@@ -250,6 +261,7 @@ export class MockAuthController {
       if (!userId) {
         return res.status(401).json({
           success: false,
+          message: 'Not authenticated',
           error: 'Not authenticated',
         });
       }
@@ -258,15 +270,17 @@ export class MockAuthController {
       if (!user) {
         return res.status(404).json({
           success: false,
+          message: 'User not found',
           error: 'User not found',
         });
       }
 
       // Remove password hash from response
-      const { passwordHash, ...userWithoutPassword } = user;
+      const { passwordHash: _, ...userWithoutPassword } = user;
 
       res.json({
         success: true,
+        message: 'Profile retrieved successfully',
         data: userWithoutPassword,
       });
     } catch (error) {

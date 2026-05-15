@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/database';
 import { StripeService } from '../services/stripeService';
-import { EmailService } from '../services/emailService';
-
-const prisma = new PrismaClient();
-const emailService = new EmailService();
+import { getEmailService } from '../utils/email';
+import { getAdminEmail } from '../config/email';
 
 export class OrderController {
   /**
@@ -12,27 +10,49 @@ export class OrderController {
    */
   static async createOrder(req: Request, res: Response, next: NextFunction) {
     try {
-      const { 
-        shippingAddress, 
-        billingAddress, 
-        paymentMethod, 
-        notes,
-        cartId 
+      const {
+        customerName,
+        email,
+        phone,
+        address,
+        paymentMethod,
+        cartId
       } = req.body;
 
       const userId = (req as any).user?.id;
+      const headerSessionId = req.headers['x-session-id'];
+      const sessionId = req.cookies?.sessionId ||
+        (Array.isArray(headerSessionId) ? headerSessionId[0] : headerSessionId);
 
-      if (!userId && !cartId) {
-        return res.status(400).json({ 
-          error: 'Either userId (authenticated) or cartId is required' 
+      // Debug logging — REMOVE AFTER VERIFICATION
+      console.log('[DEBUG createOrder] req.cookies:', req.cookies);
+      console.log('[DEBUG createOrder] x-session-id header:', headerSessionId);
+      console.log('[DEBUG createOrder] resolved sessionId:', sessionId);
+      console.log('[DEBUG createOrder] userId:', userId);
+      console.log('[DEBUG createOrder] cartId from body:', cartId);
+
+      // Find the cart by userId (authenticated), sessionId (guest from cookie/header), or cartId (explicit)
+      let cartQuery: any = null;
+
+      if (userId) {
+        cartQuery = { userId };
+      } else if (sessionId) {
+        cartQuery = { sessionId };
+      } else if (cartId && cartId !== 'current') {
+        cartQuery = { id: cartId };
+      }
+
+      console.log('[DEBUG createOrder] cartQuery:', JSON.stringify(cartQuery));
+
+      if (!cartQuery) {
+        return res.status(400).json({
+          error: 'No cart found. Please add items to your cart before checkout.'
         });
       }
 
       // Get cart with items
-      const cart = await prisma.cart.findUnique({
-        where: { 
-          id: cartId || (userId ? { userId } : undefined)
-        },
+      const cart = await prisma.cart.findFirst({
+        where: cartQuery,
         include: {
           items: {
             include: {
@@ -78,15 +98,37 @@ export class OrderController {
         return sum + (item.priceAtTime * item.quantity);
       }, 0);
 
+      // Build notes with customer info for record-keeping
+      const notes = customerName || email || phone
+        ? `Customer: ${customerName || 'Guest'}, Email: ${email || 'N/A'}, Phone: ${phone || 'N/A'}`
+        : '';
+
+      // For guest users, create or find a guest user record
+      let resolvedUserId = userId;
+      if (!resolvedUserId) {
+        // Use a generic guest user for guest checkouts
+        const guestUser = await prisma.user.upsert({
+          where: { email: 'guest@aforsev.com' },
+          update: {},
+          create: {
+            email: 'guest@aforsev.com',
+            passwordHash: 'guest-no-login',
+            name: customerName || 'Guest',
+            role: 'GUEST',
+          },
+        });
+        resolvedUserId = guestUser.id;
+      }
+
       // Create order
       const order = await prisma.order.create({
         data: {
-          userId: userId || 'guest',
+          userId: resolvedUserId,
           cartId: cart.id,
           totalAmount,
           status: 'PENDING',
-          shippingAddress,
-          billingAddress: billingAddress || shippingAddress,
+          shippingAddress: address || '',
+          billingAddress: address || '',
           paymentMethod: paymentMethod || 'CASH_ON_DELIVERY',
           paymentStatus: 'PENDING',
           notes,
@@ -112,35 +154,71 @@ export class OrderController {
         where: { cartId: cart.id }
       });
 
-      // Send order confirmation email if user is registered
-      if (userId && userId !== 'guest') {
-        try {
+      // Send email notifications
+      try {
+        // Format order items for email
+        const orderItems = order.items.map(item => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: Number(item.unitPrice),
+          productId: item.productId,
+          imageUrl: item.product.imageUrl || undefined,
+        }));
+
+        // Use customer info from request body (for guest checkout) or from DB (for authenticated users)
+        let resolvedCustomerName = customerName || 'Guest';
+        let resolvedCustomerEmail = email || '';
+        let resolvedCustomerPhone = phone || '';
+
+        if (userId) {
           const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { email: true, name: true }
+            select: { name: true, email: true, phone: true, role: true }
           });
-
-          if (user?.email) {
-            // Format order items for email
-            const orderItems = order.items.map(item => ({
-              name: item.product.name,
-              quantity: item.quantity,
-              price: item.unitPrice,
-              total: item.quantity * item.unitPrice
-            }));
-
-            await emailService.sendOrderConfirmationEmail(
-              user.email,
-              user.name || 'Customer',
-              order.id,
-              totalAmount,
-              orderItems
-            );
+          if (user && user.role !== 'GUEST') {
+            resolvedCustomerName = user.name || resolvedCustomerName;
+            resolvedCustomerEmail = user.email || resolvedCustomerEmail;
+            resolvedCustomerPhone = user.phone || resolvedCustomerPhone;
           }
-        } catch (emailError) {
-          console.error('Error sending order confirmation email:', emailError);
-          // Don't fail the order creation if email fails
         }
+
+        const customerInfo = {
+          name: resolvedCustomerName,
+          email: resolvedCustomerEmail,
+          phone: resolvedCustomerPhone,
+          shippingAddress: address ? {
+            street: address,
+            city: '',
+            state: '',
+            zipCode: '',
+            country: '',
+          } : undefined,
+        };
+
+        // 1. Send enhanced order confirmation to customer
+        const emailSvc = getEmailService();
+        if (resolvedCustomerEmail) {
+          await emailSvc.sendEnhancedOrderConfirmationEmail(
+            resolvedCustomerEmail,
+            customerInfo,
+            order.id,
+            totalAmount,
+            orderItems
+          );
+        }
+
+        // 2. Send new order notification to admin
+        const adminEmail = getAdminEmail();
+        await emailSvc.sendNewOrderNotificationToAdmin(
+          adminEmail,
+          customerInfo,
+          order.id,
+          totalAmount,
+          orderItems
+        );
+      } catch (emailError) {
+        console.error('Error sending order notification emails:', emailError);
+        // Don't fail the order creation if email fails
       }
 
       return res.status(201).json({

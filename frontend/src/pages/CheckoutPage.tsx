@@ -83,14 +83,14 @@ const CheckoutPage: React.FC = () => {
     clearError();
     
     try {
-      const shippingAddress = `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`;
+      const address = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}, ${formData.country}`;
       
       const orderData = {
-        shippingAddress,
-        billingAddress: shippingAddress,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        address,
         paymentMethod: formData.paymentMethod,
-        notes: `Customer: ${formData.firstName} ${formData.lastName}, Phone: ${formData.phone}, Email: ${formData.email}`,
-        cartId: 'current'
       };
       
       const order = await createOrder(orderData);

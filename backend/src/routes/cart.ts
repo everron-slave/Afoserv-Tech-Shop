@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { MockCartController } from '../controllers/mockCartController';
+import { CartController } from '../controllers/cartController';
 import { validate } from '../middleware/validation';
 import { authenticate } from '../middleware/auth';
 import { apiLimiter } from '../middleware/rateLimiter';
@@ -19,7 +19,7 @@ router.use(apiLimiter);
  * @desc    Get cart contents
  * @access  Private (or guest with session)
  */
-router.get('/', MockCartController.getCart);
+router.get('/', CartController.getCart);
 
 /**
  * @route   POST /api/cart
@@ -29,7 +29,7 @@ router.get('/', MockCartController.getCart);
 router.post(
   '/',
   validate(validators.addToCartSchema),
-  MockCartController.addToCart
+  CartController.addToCart
 );
 
 /**
@@ -40,7 +40,7 @@ router.post(
 router.put(
   '/items/:itemId',
   validate(validators.updateCartItemSchema),
-  MockCartController.updateCartItem
+  CartController.updateCartItem
 );
 
 /**
@@ -48,20 +48,20 @@ router.put(
  * @desc    Remove item from cart
  * @access  Private (or guest with session)
  */
-router.delete('/items/:itemId', MockCartController.removeCartItem);
+router.delete('/items/:itemId', CartController.removeCartItem);
 
 /**
  * @route   DELETE /api/cart
  * @desc    Clear cart
  * @access  Private (or guest with session)
  */
-router.delete('/', MockCartController.clearCart);
+router.delete('/', CartController.clearCart);
 
 /**
  * @route   POST /api/cart/merge
  * @desc    Merge guest cart with user cart (on login)
  * @access  Private
  */
-router.post('/merge', authenticate, MockCartController.getCart); // Placeholder - would need implementation
+router.post('/merge', authenticate, CartController.mergeCarts);
 
 export { router };

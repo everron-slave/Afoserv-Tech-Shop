@@ -9,24 +9,23 @@ export interface EmailConfig {
   password: string;
   fromEmail: string;
   fromName: string;
-  sendGridApiKey?: string;
-  useSendGrid: boolean;
+  adminEmail: string;
 }
 
 export const emailConfig: EmailConfig = {
-  host: process.env.SMTP_HOST || 'smtp.sendgrid.net',
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT || '587'),
-  user: process.env.SMTP_USER || 'apikey',
+  user: process.env.SMTP_USER || '',
   password: process.env.SMTP_PASSWORD || '',
   fromEmail: process.env.FROM_EMAIL || 'noreply@aforsev.com',
   fromName: process.env.FROM_NAME || 'AFORSEV E-commerce',
-  sendGridApiKey: process.env.SENDGRID_API_KEY,
-  useSendGrid: !!process.env.SENDGRID_API_KEY,
+  adminEmail: process.env.ADMIN_EMAIL || 'admin@aforsev.com',
 };
 
 export const isEmailConfigured = (): boolean => {
-  if (emailConfig.useSendGrid) {
-    return !!emailConfig.sendGridApiKey;
-  }
   return !!emailConfig.host && !!emailConfig.user && !!emailConfig.password;
+};
+
+export const getAdminEmail = (): string => {
+  return emailConfig.adminEmail;
 };

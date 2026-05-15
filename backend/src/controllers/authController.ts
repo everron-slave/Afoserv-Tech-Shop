@@ -49,32 +49,18 @@ export class AuthController {
         },
       });
 
-      // Generate tokens
-      const accessToken = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.JWT_SECRET!,
-        { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any }
-      );
-
-      const refreshToken = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.JWT_REFRESH_SECRET!,
-        { expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '30d') as any }
-      );
+      // Generate tokens using JwtService
+      const { accessToken, refreshToken } = JwtService.generateTokens({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
 
       // Set refresh token as HTTP-only cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
@@ -105,7 +91,7 @@ export class AuthController {
    */
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
+      const { email, password, rememberMe } = req.body;
 
       // Find user
       const user = await prisma.user.findUnique({
@@ -139,19 +125,23 @@ export class AuthController {
         throw error;
       }
 
-      // Generate tokens using JwtService
+      // Generate tokens using JwtService (respect rememberMe for token expiry)
       const { accessToken, refreshToken } = JwtService.generateTokens({
         id: user.id,
         email: user.email,
         role: user.role,
-      });
+      }, rememberMe);
 
-      // Set refresh token as HTTP-only cookie
+      // Set refresh token as HTTP-only cookie (longer expiry if rememberMe)
+      const cookieMaxAge = rememberMe
+        ? 30 * 24 * 60 * 60 * 1000  // 30 days
+        : 7 * 24 * 60 * 60 * 1000;  // 7 days
+
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        sameSite: 'lax',
+        maxAge: cookieMaxAge,
       });
 
       // Remove password hash from response
@@ -179,7 +169,7 @@ export class AuthController {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
       });
 
       res.json({
@@ -225,11 +215,26 @@ export class AuthController {
         throw error;
       }
 
-      // Generate new access token using JwtService
+      // Generate new access token AND rotate refresh token
       const accessToken = JwtService.generateAccessToken({
         userId: user.id,
         email: user.email,
         role: user.role,
+      });
+
+      // Rotate refresh token for security (prevents stolen token reuse)
+      const newRefreshToken = JwtService.generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // Set new refresh token cookie (replaces old one)
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
       res.json({

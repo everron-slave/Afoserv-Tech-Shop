@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 import { Order, CreateOrderRequest, PaymentIntentRequest } from '../services/orderService'
 import { orderService } from '../services/orderService'
-import { mockOrderService } from '../services/mockOrderService'
 import { withRetry } from '../utils/retry'
 import { showApiErrorToast } from '../services/api'
 import toast from 'react-hot-toast'
 
-// Use mock service in development, real service in production
-const isDevelopment = import.meta.env.MODE === 'development'
-const activeOrderService = isDevelopment ? mockOrderService : orderService
+// Always use the real order service that hits the backend API
+const activeOrderService = orderService
 
 interface OrderStore {
   orders: Order[]

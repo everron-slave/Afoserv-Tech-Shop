@@ -1,11 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cartService, CartItem as ApiCartItem, Cart as ApiCart } from '../services/cartService'
-import { mockCartService } from '../services/mockCartService'
 
-// Use mock service in development, real service in production
-const isDevelopment = import.meta.env.MODE === 'development'
-const activeCartService = isDevelopment ? mockCartService : cartService
+// Always use the real cart service that hits the backend API
+const activeCartService = cartService
 
 export interface CartItem {
   id: string
@@ -22,6 +20,7 @@ interface CartStore {
   totalPrice: number
   isLoading: boolean
   error: string | null
+  sessionId: string | null
   
   // Local actions (for immediate UI feedback)
   addItem: (item: Omit<CartItem, 'id'>) => void
@@ -51,12 +50,13 @@ const transformApiCartItem = (apiItem: ApiCartItem): CartItem => {
 }
 
 // Helper function to transform API cart to local state
-const transformApiCart = (apiCart: ApiCart): { items: CartItem[], totalItems: number, totalPrice: number } => {
+const transformApiCart = (apiCart: ApiCart): { items: CartItem[], totalItems: number, totalPrice: number, sessionId: string | null } => {
   const items = apiCart.items.map(transformApiCartItem)
   return {
     items,
     totalItems: apiCart.totalItems || items.reduce((sum, item) => sum + item.quantity, 0),
     totalPrice: apiCart.totalAmount || items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+    sessionId: (apiCart as any).sessionId || null,
   }
 }
 
@@ -66,6 +66,7 @@ export const useCartStore = create<CartStore>()(
       items: [],
       totalItems: 0,
       totalPrice: 0,
+      sessionId: null,
       isLoading: false,
       error: null,
 

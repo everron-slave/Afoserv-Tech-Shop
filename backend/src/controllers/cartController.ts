@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/database';
 import { Cart, CartItem, Product } from '@prisma/client';
+import { getEmailService } from '../utils/email';
+import { getAdminEmail } from '../config/email';
 
 type CartWithItems = Cart & {
   items: (CartItem & {
@@ -156,7 +158,7 @@ export class CartController {
         res.cookie('sessionId', newSessionId, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -252,7 +254,7 @@ export class CartController {
         res.cookie('sessionId', newSessionId, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -319,6 +321,44 @@ export class CartController {
         where: { id: cart.id },
         data: { updatedAt: new Date() },
       });
+
+      // Send email notification to admin about cart activity (only for new items, not updates)
+      if (!existingItem) {
+        try {
+          const emailService = getEmailService();
+          const adminEmail = getAdminEmail();
+          
+          // Try to get customer info if user is authenticated
+          let customerName = 'Guest';
+          let customerEmail = '';
+          let customerPhone = '';
+          
+          if (userId) {
+            const user = await prisma.user.findUnique({
+              where: { id: userId },
+              select: { name: true, email: true, phone: true }
+            });
+            if (user) {
+              customerName = user.name || 'Customer';
+              customerEmail = user.email;
+              customerPhone = user.phone || '';
+            }
+          }
+          
+          await emailService.sendCartNotificationToAdmin(
+            adminEmail,
+            { name: customerName, email: customerEmail, phone: customerPhone },
+            {
+              name: product.name,
+              price: Number(product.price),
+              quantity
+            }
+          );
+        } catch (emailError) {
+          console.error('Error sending cart notification email:', emailError);
+          // Don't fail the cart operation if email fails
+        }
+      }
 
       // Get updated cart with all items
       const updatedCart = await CartController.getOrCreateCart(userId, cart.sessionId ?? undefined);
@@ -660,7 +700,7 @@ export class CartController {
       res.clearCookie('sessionId', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
       });
 
       // Get updated user cart

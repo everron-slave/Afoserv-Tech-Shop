@@ -29,18 +29,18 @@ router.get(
 router.get('/categories', ProductController.getCategories);
 
 /**
- * @route   GET /api/products/:id
- * @desc    Get single product by ID
- * @access  Public
- */
-router.get('/:id', ProductController.getProductById);
-
-/**
  * @route   GET /api/products/featured
  * @desc    Get featured products
  * @access  Public
  */
 router.get('/featured', ProductController.getFeaturedProducts);
+
+/**
+ * @route   GET /api/products/:id
+ * @desc    Get single product by ID
+ * @access  Public
+ */
+router.get('/:id', ProductController.getProductById);
 
 // Admin routes - require authentication and admin role
 router.use(authenticate);

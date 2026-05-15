@@ -28,10 +28,11 @@ export interface Order {
 
 export interface CreateOrderRequest {
   cartId?: string
-  shippingAddress: string
-  billingAddress?: string
+  customerName?: string
+  email?: string
+  phone?: string
+  address?: string
   paymentMethod: string
-  notes?: string
 }
 
 export interface PaymentIntentRequest {
@@ -52,8 +53,15 @@ export interface PaymentIntentResponse {
 export const orderService = {
   // Create new order
   async createOrder(orderData: CreateOrderRequest): Promise<Order> {
-    const response = await api.post('/api/orders', orderData)
-    return response.data.data
+    // Get session ID from cart store for guest checkout
+    const { useCartStore } = await import('../store/cartStore')
+    const sessionId = useCartStore.getState().sessionId
+    
+    const response = await api.post('/api/orders', orderData, {
+      headers: sessionId ? { 'x-session-id': sessionId } : undefined
+    })
+    // The backend returns { message, order } format
+    return response.data.order || response.data.data
   },
 
   // Get order by ID

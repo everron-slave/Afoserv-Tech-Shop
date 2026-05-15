@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import sgMail from '@sendgrid/mail';
 import { emailConfig, isEmailConfigured } from '../config/email';
 
 export interface EmailOptions {
@@ -12,26 +11,40 @@ export interface EmailOptions {
   replyTo?: string;
 }
 
+export interface CustomerInfo {
+  name: string;
+  email: string;
+  phone?: string;
+  shippingAddress?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
+}
+
+export interface CartItemInfo {
+  name: string;
+  quantity: number;
+  price: number;
+  productId?: string;
+  imageUrl?: string;
+}
+
 export class EmailService {
   private transporter: nodemailer.Transporter | null = null;
-  private useSendGrid: boolean;
 
   constructor() {
-    this.useSendGrid = emailConfig.useSendGrid;
-    
-    if (!this.useSendGrid) {
-      this.transporter = nodemailer.createTransport({
-        host: emailConfig.host,
-        port: emailConfig.port,
-        secure: emailConfig.port === 465,
-        auth: {
-          user: emailConfig.user,
-          pass: emailConfig.password,
-        },
-      });
-    } else if (emailConfig.sendGridApiKey) {
-      sgMail.setApiKey(emailConfig.sendGridApiKey);
-    }
+    this.transporter = nodemailer.createTransport({
+      host: emailConfig.host,
+      port: emailConfig.port,
+      secure: emailConfig.port === 465,
+      auth: {
+        user: emailConfig.user,
+        pass: emailConfig.password,
+      },
+    });
   }
 
   async sendEmail(options: EmailOptions): Promise<boolean> {
@@ -43,35 +56,22 @@ export class EmailService {
     try {
       const from = `"${emailConfig.fromName}" <${emailConfig.fromEmail}>`;
       
-      if (this.useSendGrid && emailConfig.sendGridApiKey) {
-        const msg = {
-          to: options.to,
-          from,
-          subject: options.subject,
-          html: options.html,
-          text: options.text,
-          cc: options.cc,
-          bcc: options.bcc,
-          replyTo: options.replyTo,
-        };
-        
-        await sgMail.send(msg);
-      } else if (this.transporter) {
-        const mailOptions = {
-          from,
-          to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
-          subject: options.subject,
-          html: options.html,
-          text: options.text,
-          cc: options.cc,
-          bcc: options.bcc,
-          replyTo: options.replyTo,
-        };
-        
-        await this.transporter.sendMail(mailOptions);
-      } else {
+      if (!this.transporter) {
         throw new Error('No email transport configured');
       }
+
+      const mailOptions = {
+        from,
+        to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+        subject: options.subject,
+        html: options.html,
+        text: options.text,
+        cc: options.cc,
+        bcc: options.bcc,
+        replyTo: options.replyTo,
+      };
+      
+      await this.transporter.sendMail(mailOptions);
       
       console.log(`Email sent successfully to ${options.to}`);
       return true;
@@ -108,6 +108,49 @@ export class EmailService {
   async sendAbandonedCartEmail(to: string, name: string, cartItems: Array<{ name: string; price: number }>): Promise<boolean> {
     const subject = 'Complete Your Purchase at AFORSEV';
     const html = this.generateAbandonedCartEmail(name, cartItems);
+    return this.sendEmail({ to, subject, html });
+  }
+
+  /**
+   * Send notification to admin when a user adds an item to cart
+   */
+  async sendCartNotificationToAdmin(
+    adminEmail: string,
+    customerInfo: CustomerInfo,
+    product: { name: string; price: number; quantity: number; imageUrl?: string }
+  ): Promise<boolean> {
+    const subject = `🛒 ${customerInfo.name} added "${product.name}" to cart`;
+    const html = this.generateCartNotificationAdminEmail(customerInfo, product);
+    return this.sendEmail({ to: adminEmail, subject, html });
+  }
+
+  /**
+   * Send notification to admin when a new order is placed
+   */
+  async sendNewOrderNotificationToAdmin(
+    adminEmail: string,
+    customerInfo: CustomerInfo,
+    orderId: string,
+    orderTotal: number,
+    items: CartItemInfo[]
+  ): Promise<boolean> {
+    const subject = `🛍️ New Order #${orderId} from ${customerInfo.name} - $${orderTotal.toFixed(2)}`;
+    const html = this.generateNewOrderAdminEmail(customerInfo, orderId, orderTotal, items);
+    return this.sendEmail({ to: adminEmail, subject, html });
+  }
+
+  /**
+   * Enhanced order confirmation to customer with full details
+   */
+  async sendEnhancedOrderConfirmationEmail(
+    to: string,
+    customerInfo: CustomerInfo,
+    orderId: string,
+    orderTotal: number,
+    items: CartItemInfo[]
+  ): Promise<boolean> {
+    const subject = `Order Confirmed - #${orderId}`;
+    const html = this.generateEnhancedOrderConfirmationEmail(customerInfo, orderId, orderTotal, items);
     return this.sendEmail({ to, subject, html });
   }
 
@@ -370,6 +413,220 @@ export class EmailService {
           <div class="footer">
             <p>© ${new Date().getFullYear()} AFORSEV E-commerce. All rights reserved.</p>
             <p>This email was sent because you left items in your cart. If you've already completed your purchase, please ignore this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateCartNotificationAdminEmail(customerInfo: CustomerInfo, product: { name: string; price: number; quantity: number; imageUrl?: string }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #3B82F6; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+          .customer-box { background-color: #e8f4fd; border: 1px solid #b3d9f2; padding: 15px; border-radius: 4px; margin: 20px 0; }
+          .product-box { background-color: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px; margin: 20px 0; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
+          .label { font-weight: bold; color: #555; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🛒 Cart Activity Alert</h1>
+          </div>
+          <div class="content">
+            <h2>Customer Added Item to Cart</h2>
+            
+            <div class="customer-box">
+              <h3>Customer Information</h3>
+              <p><span class="label">Name:</span> ${customerInfo.name}</p>
+              <p><span class="label">Email:</span> <a href="mailto:${customerInfo.email}">${customerInfo.email}</a></p>
+              ${customerInfo.phone ? `<p><span class="label">Phone:</span> <a href="tel:${customerInfo.phone}">${customerInfo.phone}</a></p>` : ''}
+            </div>
+            
+            <div class="product-box">
+              <h3>Product Added</h3>
+              <p><span class="label">Product:</span> ${product.name}</p>
+              <p><span class="label">Price:</span> $${product.price.toFixed(2)}</p>
+              <p><span class="label">Quantity:</span> ${product.quantity}</p>
+              <p><span class="label">Total Value:</span> <strong>$${(product.price * product.quantity).toFixed(2)}</strong></p>
+            </div>
+            
+            <p>This customer is showing interest in your products. Consider reaching out to assist with their purchase.</p>
+            <p><strong>The AFORSEV Team</strong></p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} AFORSEV E-commerce. All rights reserved.</p>
+            <p>This is an automated notification from your e-commerce platform.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateNewOrderAdminEmail(customerInfo: CustomerInfo, orderId: string, orderTotal: number, items: CartItemInfo[]): string {
+    const itemsHtml = items.map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${item.price.toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.quantity * item.price).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    const addressHtml = customerInfo.shippingAddress ? `
+      <p><span class="label">Address:</span> ${customerInfo.shippingAddress.street || ''}</p>
+      <p><span class="label">City:</span> ${customerInfo.shippingAddress.city || ''}</p>
+      <p><span class="label">State:</span> ${customerInfo.shippingAddress.state || ''}</p>
+      <p><span class="label">Zip Code:</span> ${customerInfo.shippingAddress.zipCode || ''}</p>
+      <p><span class="label">Country:</span> ${customerInfo.shippingAddress.country || ''}</p>
+    ` : '';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #10B981; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+          .customer-box { background-color: #e8f5e9; border: 1px solid #c8e6c9; padding: 15px; border-radius: 4px; margin: 20px 0; }
+          .order-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          .order-table th { background-color: #f0f0f0; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; }
+          .order-table td { padding: 10px; border-bottom: 1px solid #eee; }
+          .total-row { font-weight: bold; background-color: #f9f9f9; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
+          .label { font-weight: bold; color: #555; }
+          .badge { display: inline-block; background-color: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🛍️ New Order Received!</h1>
+            <p>Order #${orderId}</p>
+          </div>
+          <div class="content">
+            <div class="customer-box">
+              <h3>👤 Customer Details</h3>
+              <p><span class="label">Name:</span> ${customerInfo.name}</p>
+              <p><span class="label">Email:</span> <a href="mailto:${customerInfo.email}">${customerInfo.email}</a></p>
+              ${customerInfo.phone ? `<p><span class="label">Phone:</span> <a href="tel:${customerInfo.phone}">${customerInfo.phone}</a></p>` : ''}
+              ${addressHtml}
+            </div>
+            
+            <h3>📦 Order Items</h3>
+            <table class="order-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+                <tr class="total-row">
+                  <td colspan="3" style="text-align: right; padding: 10px;">Order Total:</td>
+                  <td style="text-align: right; padding: 10px;">$${orderTotal.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <p>Please process this order and prepare the items for shipment.</p>
+            <p><strong>The AFORSEV Team</strong></p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} AFORSEV E-commerce. All rights reserved.</p>
+            <p>Order #${orderId} | Placed on ${new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateEnhancedOrderConfirmationEmail(customerInfo: CustomerInfo, orderId: string, orderTotal: number, items: CartItemInfo[]): string {
+    const itemsHtml = items.map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${item.price.toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.quantity * item.price).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #4F46E5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+          .order-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          .order-table th { background-color: #f0f0f0; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; }
+          .order-table td { padding: 10px; border-bottom: 1px solid #eee; }
+          .total-row { font-weight: bold; background-color: #f9f9f9; }
+          .info-box { background-color: #eef2ff; border: 1px solid #c7d2fe; padding: 15px; border-radius: 4px; margin: 20px 0; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>✅ Order Confirmed!</h1>
+          </div>
+          <div class="content">
+            <h2>Thank you, ${customerInfo.name}!</h2>
+            <p>Your order <strong>#${orderId}</strong> has been received and is being processed.</p>
+            
+            <div class="info-box">
+              <h3>📋 Order Summary</h3>
+              <table class="order-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                  <tr class="total-row">
+                    <td colspan="3" style="text-align: right; padding: 10px;">Order Total:</td>
+                    <td style="text-align: right; padding: 10px;">$${orderTotal.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>📬 What Happens Next?</h3>
+            <ol>
+              <li>We'll prepare your items for shipment</li>
+              <li>You'll receive a shipping confirmation with tracking information</li>
+              <li>Your order will be delivered to your shipping address</li>
+            </ol>
+            
+            <p>If you have any questions about your order, please reply to this email or contact our support team. We'll be happy to help!</p>
+            <p><strong>The AFORSEV Team</strong></p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} AFORSEV E-commerce. All rights reserved.</p>
+            <p>Order #${orderId} | Placed on ${new Date().toLocaleDateString()}</p>
+            <p>Contact us: support@aforsev.com | +1 (555) 123-4567</p>
           </div>
         </div>
       </body>

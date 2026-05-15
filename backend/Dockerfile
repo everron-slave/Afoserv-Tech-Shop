@@ -24,7 +24,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/dist ./dist
@@ -34,13 +34,16 @@ COPY --from=builder /app/prisma ./prisma
 RUN npx prisma generate
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
+RUN addgroup -g 1001 nodejs && \
+    adduser -u 1001 -G nodejs -s /bin/sh -D nodejs
 USER nodejs
 
+# Set default port
+ENV PORT=3000
+
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:${PORT}/api/health', (r) => {if(r.statusCode!==200)throw new Error()})"
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 EXPOSE 3000
 
